@@ -23,6 +23,8 @@
  * provenance tooling can track generated code. Humans can ignore this.
  */
 
+import { parseReferences } from "./references";
+
 export const BRANCH_OUTCOMES = ["True", "False"];
 
 export function getBranchOutcomes(step) {
@@ -42,7 +44,10 @@ export function getConnectionsTo(flow, stepId) {
 }
 
 function getTarget(flow, stepId, outcome) {
-  return flow.connections.find((c) => c.sourceStepId === stepId && c.outcome === outcome)?.targetStepId ?? null;
+  return (
+    flow.connections.find((c) => c.sourceStepId === stepId && c.outcome === outcome)
+      ?.targetStepId ?? null
+  );
 }
 
 /** The step nothing points at. */
@@ -97,9 +102,15 @@ export function insertStep(flow, newStep, position = {}) {
 
   if (position.branch) {
     const { ifStepId, outcome } = position.branch;
-    const existing = flow.connections.find((c) => c.sourceStepId === ifStepId && c.outcome === outcome);
+    const existing = flow.connections.find(
+      (c) => c.sourceStepId === ifStepId && c.outcome === outcome,
+    );
     if (existing) {
-      flow.connections.push({ sourceStepId: newStep.id, targetStepId: existing.targetStepId, outcome: "Done" });
+      flow.connections.push({
+        sourceStepId: newStep.id,
+        targetStepId: existing.targetStepId,
+        outcome: "Done",
+      });
       existing.targetStepId = newStep.id;
     } else {
       flow.connections.push({ sourceStepId: ifStepId, targetStepId: newStep.id, outcome });
@@ -108,19 +119,31 @@ export function insertStep(flow, newStep, position = {}) {
   }
 
   if (position.afterStepId) {
-    const existing = flow.connections.find((c) => c.sourceStepId === position.afterStepId && c.outcome === "Done");
+    const existing = flow.connections.find(
+      (c) => c.sourceStepId === position.afterStepId && c.outcome === "Done",
+    );
     if (existing) {
-      flow.connections.push({ sourceStepId: newStep.id, targetStepId: existing.targetStepId, outcome: "Done" });
+      flow.connections.push({
+        sourceStepId: newStep.id,
+        targetStepId: existing.targetStepId,
+        outcome: "Done",
+      });
       existing.targetStepId = newStep.id;
     } else {
-      flow.connections.push({ sourceStepId: position.afterStepId, targetStepId: newStep.id, outcome: "Done" });
+      flow.connections.push({
+        sourceStepId: position.afterStepId,
+        targetStepId: newStep.id,
+        outcome: "Done",
+      });
     }
     return;
   }
 
   // beginning of the flow
-  const entryId = flow.steps.length > 1 ? getEntryStepId({ ...flow, steps: flow.steps.slice(0, -1) }) : null;
-  if (entryId) flow.connections.push({ sourceStepId: newStep.id, targetStepId: entryId, outcome: "Done" });
+  const entryId =
+    flow.steps.length > 1 ? getEntryStepId({ ...flow, steps: flow.steps.slice(0, -1) }) : null;
+  if (entryId)
+    flow.connections.push({ sourceStepId: newStep.id, targetStepId: entryId, outcome: "Done" });
 }
 
 /** True when the step can be removed without first emptying its branches. */
@@ -128,6 +151,23 @@ export function canRemoveStep(flow, stepId) {
   const step = getStep(flow, stepId);
   if (!step) return false;
   return getBranchOutcomes(step).every((outcome) => !getTarget(flow, stepId, outcome));
+}
+
+/**
+ * Steps (other than the one being removed) whose properties reference its outputs.
+ * @returns {{ step: object, outputKeys: string[] }[]}
+ */
+export function getStepDependents(flow, stepId) {
+  return flow.steps
+    .filter((s) => s.id !== stepId)
+    .map((step) => {
+      // stringify so references are found in any property shape: nested objects, arrays, etc.
+      const refs = parseReferences(JSON.stringify(step.properties ?? {})).filter(
+        (r) => r.stepId === stepId,
+      );
+      return { step, outputKeys: [...new Set(refs.map((r) => r.outputKey))] };
+    })
+    .filter((d) => d.outputKeys.length);
 }
 
 /**
@@ -139,8 +179,10 @@ export function removeStep(flow, stepId) {
   const outgoing = getConnectionsFrom(flow, stepId).find((c) => c.outcome === "Done");
 
   flow.steps = flow.steps.filter((s) => s.id !== stepId);
-  flow.connections = flow.connections.filter((c) => c.sourceStepId !== stepId && c.targetStepId !== stepId);
- 
+  flow.connections = flow.connections.filter(
+    (c) => c.sourceStepId !== stepId && c.targetStepId !== stepId,
+  );
+
   if (outgoing) {
     incoming.forEach((c) => {
       flow.connections.push({ ...outgoing, sourceStepId: c.sourceStepId, outcome: c.outcome });

@@ -2,6 +2,7 @@ import { api } from "@/api";
 import { buildTree, canRemoveStep, getStep, insertStep, removeStep } from "@/logic/graph.js";
 import { STEP_TYPES } from "@/logic/stepTypes.js";
 import { defineStore } from "pinia";
+import { getStepDependents } from "../logic/graph.js";
 import { useFlowsStore } from "./flows.js";
 import { useUiStore } from "./ui.js";
 
@@ -95,8 +96,21 @@ export const useEditorStore = defineStore("editor", {
         });
         return;
       }
+
+      const dependents = getStepDependents(this.flow, stepId);
+
+      if (dependents.length) {
+        useUiStore().stepToDeleteId = stepId;
+        return;
+      }
+
+      this.confirmDeleteStep(stepId);
+    },
+
+    confirmDeleteStep(stepId) {
       removeStep(this.flow, stepId);
       if (this.selectedStepId === stepId) this.selectedStepId = null;
+      useUiStore().stepToDeleteId = null;
     },
   },
 });
