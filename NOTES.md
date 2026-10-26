@@ -68,6 +68,7 @@ I would try to come with a better modal system, actually fix the openFlow action
 I have a failing test that I need to solve.
 Humanize the references insertion in steps.
 Add loaders on deletion, disable the button as well while loading.
+On confirmation delete modal I would improve readability of the dependents outputs.
 Add a discard btn (icon) on the selected step editor.
 Maybe implement typescript.
 
