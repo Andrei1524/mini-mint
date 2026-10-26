@@ -5,8 +5,11 @@ let nextToastId = 1;
 export const useUiStore = defineStore("ui", {
   state: () => ({
     toasts: [],
-    stepDeleteConfirmationOpen: false,
+    stepToDeleteId: null,
   }),
+  getters: {
+    stepDeleteConfirmationOpen: (state) => !!state.stepToDeleteId,
+  },
   actions: {
     notify({ intent = "informative", text, duration = 4000 }) {
       const id = nextToastId++;

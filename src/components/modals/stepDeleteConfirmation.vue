@@ -1,7 +1,7 @@
 <template>
   <div>
     <catnip-dialog
-      @close-dialog="toggleModal(false)"
+      @close-dialog="closeModal"
       :open="ui.stepDeleteConfirmationOpen"
       title="Confirm deletion of a step"
     >
@@ -9,7 +9,7 @@
         >This step outputs are being used by others steps, see below the outputs and confirm
         deletion.</span
       >
-      <catnip-button slot="footer" appearance="ghost" size="m" @click="toggleModal(false)">
+      <catnip-button slot="footer" appearance="ghost" size="m" @click="closeModal">
         Cancel
       </catnip-button>
       <catnip-button slot="footer" size="m">Submit</catnip-button>
@@ -22,8 +22,8 @@ import { useUiStore } from "../../store/ui";
 
 const ui = useUiStore();
 
-function toggleModal(value) {
-  ui.stepDeleteConfirmationOpen = value;
+function closeModal() {
+  ui.stepToDeleteId = null;
 }
 </script>
 
