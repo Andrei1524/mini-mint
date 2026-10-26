@@ -50,8 +50,11 @@ So my logic building the outputs is to see whats the selected step, run the poss
 (plan of attack:just read the feature and now I am thinking to use a new component, stepDeleteConfirmation or an universal reusable one but I would go to just have something
 to work and then figure it out later, having one hour left the most straighforward is to see signicat list of components I can use, use the ui.store to hold modal data and state.
 I have the modals ready and toggling, now I need to add a new func to check removal logic from outputs dependants. used claude to generate the function checker for output dependants.
+trying to understand the reasioning of matching step dependents of a selected step.
 )
 <!-- How you find references, and why you did it that way. -->
+
+Im finding the references using the help of parseReferences by flattening the properties of the selected step and only keep the ones that matches the step being deleted
 
 ## Decisions and assumptions
 
