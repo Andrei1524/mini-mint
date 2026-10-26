@@ -1,9 +1,17 @@
 <template>
   <div>
-    <catnip-dialog :open="ui.stepDeleteConfirmationOpen" title="Confirm changes">
-      <span>Use the body for supporting content, form fields, or confirmation copy.</span>
-      <catnip-tooltip placement="right">Extra hint without filling out a form</catnip-tooltip>
-      <catnip-button slot="footer" appearance="ghost" size="m">Cancel</catnip-button>
+    <catnip-dialog
+      @close-dialog="toggleModal(false)"
+      :open="ui.stepDeleteConfirmationOpen"
+      title="Confirm deletion of a step"
+    >
+      <span
+        >This step outputs are being used by others steps, see below the outputs and confirm
+        deletion.</span
+      >
+      <catnip-button slot="footer" appearance="ghost" size="m" @click="toggleModal(false)">
+        Cancel
+      </catnip-button>
       <catnip-button slot="footer" size="m">Submit</catnip-button>
     </catnip-dialog>
   </div>
@@ -13,6 +21,10 @@
 import { useUiStore } from "../../store/ui";
 
 const ui = useUiStore();
+
+function toggleModal(value) {
+  ui.stepDeleteConfirmationOpen = value;
+}
 </script>
 
 <style lang="scss" scoped></style>
