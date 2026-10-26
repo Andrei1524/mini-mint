@@ -66,6 +66,8 @@ I had to read the getStepDependents func multiple times to properly understand i
 
 I would try to come with a better modal system, actually fix the openFlow action by cancelling unused calls and move the fetch to a services layer or a better structure to organize fetches.
 I have a failing test that I need to solve.
+Humanize the references insertion in steps.
+Maybe implement typescript.
 
 ## AI usage
 
