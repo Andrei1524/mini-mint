@@ -13,8 +13,8 @@ export const useEditorStore = defineStore("editor", {
     loading: false,
     saving: false,
     selectedStepId: null,
-  }), 
- 
+  }),
+
   getters: {
     tree: (state) => (state.flow ? buildTree(state.flow) : []),
     selectedStep: (state) =>
@@ -23,7 +23,6 @@ export const useEditorStore = defineStore("editor", {
       !!state.flow && JSON.stringify(state.flow) !== JSON.stringify(state.original),
   },
 
-  // TODO: fix the issue of the formatter ox not working
   actions: {
     async openFlow(flowId) {
       if (flowId === this.activeFlowId) return;
@@ -36,7 +35,7 @@ export const useEditorStore = defineStore("editor", {
         const flow = await api.getFlow(flowId);
         if (this.activeFlowId !== flowId) return; // this is the fix from the AI, its good but I belive I still have 2 ongoing calls even tho my data saved is correct now - leave for later
         this.flow = flow;
-        this.original = flow;
+        this.original = structuredClone(flow);
         api.subscribe(flowId, (event) => this.handleRealtimeEvent(event));
       } catch (error) {
         if (this.activeFlowId !== flowId) return;
@@ -87,7 +86,7 @@ export const useEditorStore = defineStore("editor", {
       insertStep(this.flow, step, position);
       this.selectedStepId = step.id;
     },
- 
+
     deleteStep(stepId) {
       if (!canRemoveStep(this.flow, stepId)) {
         useUiStore().notify({

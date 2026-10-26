@@ -13,6 +13,7 @@
 - How I verified it: I had to test the whole flow a few times with logs added, I read a bit before the homeworking but this is the first time grasping the flows until this bug, but I find the delete function first in the store, then I saw we use a separate logic file that handles the deletion. I had to debug there with console logs to see whats the issue.
 
 ### #2 Switching flows quickly
+
 (plan of attack: #1 identify the flow of list changing, check how slected flows are stored in. possible issues can be that the location of selected flow is not clearing up on click, check for endpoint calls - I would to this before debugging with AI. #2 - found out that the issue its in the editor store - openFlow, there are 2 calls being made at the same time and the quickest wins, I have mutiple ways of fixing this but this what cames in my mind: 1.when a http call is not completed I would cancel that and let the latest http call complete, 2. add an active loading flow and check if we already have one and on switching try to cancel the first one. I will check with AI to be more faster. Ok I pasted the code of the openFlow function, AI did implement a quick guard, its working but what I would to is to further optimize the actuall http call because even I only save correct data, 2 calls are still being made - leave for final or for interview if no time)
 
 - Root cause: this was a racing condition, it appared the quickest call won and thats why the latest click wasnt being saved with right data.
@@ -21,9 +22,12 @@
 
 ### #3 Unsaved changes / Discard
 
-- Root cause:
-- Fix:
-- How I verified it:
+(plan of attack: check where is label if its a component or not, check how changes are detected. isDirty getter should detect unsaved changes. Ok, I tried first to see why its not detecting changes, checked with AI the exact getter code, AI pointed that maybe when saving flow and original are pointing to the same obj from the fetch call and it was right, thats the issue, also check for more placing and use structuredClone to actually have a copy of the obj)
+
+- Root cause: when instantiating flow and original in editor store, there was no actually cloning of the flow obj
+- Fix: used structuredClone but any other cloning tehniques can be used , such the clone from lodash
+- How I verified it: first check the code flow, see what boolean is responsible for showing label and enabling the "discard" btn, check the getter code, research with AI, AI pointed
+  that it maybe be a reactivity issue and that was right.
 
 ### Other things I noticed
 
