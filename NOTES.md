@@ -39,9 +39,11 @@
 
 (plan of attack: I would read the feature, understand it, try to check if to use catnip-list component, read the outputs and try to come later with a logic implement.
 I saw IdVerification from the editor flow steps is the same as the STEP_TYPEs obj in stepTypes.js so when building the feature get the output from that list of obj by key.
-I saw that possible outputs are only the ones before the selected _step_, so having that in mind along signicat design system, I went along to claude chat and told I have this cantnip-list example comp, I want a getter to compute possible outputs from a selected step and now I have a generated code to use on computed and a vue template - lets see where this gets me now.
+I saw that possible outputs are only the ones before the selected _step_, so having that in mind along signicat design system, I went along to claude chat and told I have this cantnip-list example comp, I want a getter to compute possible outputs from a selected step and now I have a generated code to use on computed and a vue template - lets see where this gets me now. Fixed and adjusted the generated code, and tested to see if grouping and code is taking in considerations the connections as well.
 )
 <!-- Which outputs you offer, and why. Edge cases you thought about. -->
+
+So my logic building the outputs is to see whats the selected step, run the possible scenarions to that step trough the conexions and use that building an array of groups
 
 ### B. Safe delete
 
