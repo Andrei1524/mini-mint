@@ -13,10 +13,11 @@
 - How I verified it: I had to test the whole flow a few times with logs added, I read a bit before the homeworking but this is the first time grasping the flows until this bug, but I find the delete function first in the store, then I saw we use a separate logic file that handles the deletion. I had to debug there with console logs to see whats the issue.
 
 ### #2 Switching flows quickly
+(plan of attack: #1 identify the flow of list changing, check how slected flows are stored in. possible issues can be that the location of selected flow is not clearing up on click, check for endpoint calls - I would to this before debugging with AI. #2 - found out that the issue its in the editor store - openFlow, there are 2 calls being made at the same time and the quickest wins, I have mutiple ways of fixing this but this what cames in my mind: 1.when a http call is not completed I would cancel that and let the latest http call complete, 2. add an active loading flow and check if we already have one and on switching try to cancel the first one. I will check with AI to be more faster. Ok I pasted the code of the openFlow function, AI did implement a quick guard, its working but what I would to is to further optimize the actuall http call because even I only save correct data, 2 calls are still being made - leave for final or for interview if no time)
 
-- Root cause:
-- Fix:
-- How I verified it:
+- Root cause: this was a racing condition, it appared the quickest call won and thats why the latest click wasnt being saved with right data.
+- Fix: test the list by having vuedevstools open, seeing that editor is saving wrong data on multiple cliks, paste the openFlow func to claude and see whats the fix and check it afterwards
+- How I verified it: clicking the list, checking with vuedevtools on whats being saved, identify the issue, check with AI the generated code, test if it works.
 
 ### #3 Unsaved changes / Discard
 

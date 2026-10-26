@@ -1,7 +1,7 @@
-import { defineStore } from "pinia";
 import { api } from "@/api";
 import { buildTree, canRemoveStep, getStep, insertStep, removeStep } from "@/logic/graph.js";
 import { STEP_TYPES } from "@/logic/stepTypes.js";
+import { defineStore } from "pinia";
 import { useFlowsStore } from "./flows.js";
 import { useUiStore } from "./ui.js";
 
@@ -12,15 +12,18 @@ export const useEditorStore = defineStore("editor", {
     original: null,
     loading: false,
     saving: false,
-    selectedStepId: null
-  }),
-
+    selectedStepId: null,
+  }), 
+ 
   getters: {
     tree: (state) => (state.flow ? buildTree(state.flow) : []),
-    selectedStep: (state) => (state.flow && state.selectedStepId ? getStep(state.flow, state.selectedStepId) : null),
-    isDirty: (state) => !!state.flow && JSON.stringify(state.flow) !== JSON.stringify(state.original)
+    selectedStep: (state) =>
+      state.flow && state.selectedStepId ? getStep(state.flow, state.selectedStepId) : null,
+    isDirty: (state) =>
+      !!state.flow && JSON.stringify(state.flow) !== JSON.stringify(state.original),
   },
 
+  // TODO: fix the issue of the formatter ox not working
   actions: {
     async openFlow(flowId) {
       if (flowId === this.activeFlowId) return;
@@ -31,13 +34,15 @@ export const useEditorStore = defineStore("editor", {
       this.loading = true;
       try {
         const flow = await api.getFlow(flowId);
+        if (this.activeFlowId !== flowId) return; // this is the fix from the AI, its good but I belive I still have 2 ongoing calls even tho my data saved is correct now - leave for later
         this.flow = flow;
         this.original = flow;
         api.subscribe(flowId, (event) => this.handleRealtimeEvent(event));
       } catch (error) {
+        if (this.activeFlowId !== flowId) return;
         useUiStore().notify({ intent: "danger", text: `Could not load flow: ${error.message}` });
       } finally {
-        this.loading = false;
+        if (this.activeFlowId === flowId) this.loading = false;
       }
     },
 
@@ -77,19 +82,22 @@ export const useEditorStore = defineStore("editor", {
         id: crypto.randomUUID(),
         type,
         displayName: definition.label,
-        properties: definition.defaults()
+        properties: definition.defaults(),
       };
       insertStep(this.flow, step, position);
       this.selectedStepId = step.id;
     },
-
+ 
     deleteStep(stepId) {
       if (!canRemoveStep(this.flow, stepId)) {
-        useUiStore().notify({ intent: "warning", text: "Remove the steps inside this condition first." });
+        useUiStore().notify({
+          intent: "warning",
+          text: "Remove the steps inside this condition first.",
+        });
         return;
       }
       removeStep(this.flow, stepId);
       if (this.selectedStepId === stepId) this.selectedStepId = null;
-    }
-  }
+    },
+  },
 });
