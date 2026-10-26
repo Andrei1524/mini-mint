@@ -71,6 +71,7 @@ Add loaders on deletion, disable the button as well while loading.
 On confirmation delete modal I would improve readability of the dependents outputs.
 Add a discard btn (icon) on the selected step editor.
 Maybe implement typescript.
+Add a linter.
 
 ## AI usage
 
