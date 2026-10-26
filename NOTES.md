@@ -4,6 +4,10 @@
 
 <!-- What you did, in a few sentences. What you'd like us to look at first. -->
 
+I started fixing all the bugs, I wrote down all my thoughts to help me processs information faster and have a good mental model before using AI.
+Then I went into adding the features one by one.
+I did everything in PRs so I would start first with the bugs and then the features.
+
 ## Bug fixes
 
 ### #1 Deleting the first step of a branch
