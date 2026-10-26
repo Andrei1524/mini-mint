@@ -13,7 +13,7 @@
 - How I verified it: I had to test the whole flow a few times with logs added, I read a bit before the homeworking but this is the first time grasping the flows until this bug, but I find the delete function first in the store, then I saw we use a separate logic file that handles the deletion. I had to debug there with console logs to see whats the issue.
 
 ### #2 Switching flows quickly
-(plan of attack: identify the flow of list changing, check how slected flows are stored in. possible issues can be that the location of selected flow is not clearing up, check for endpoint calls - I would to this before debugging with AI)
+(plan of attack: identify the flow of list changing, check how slected flows are stored in. possible issues can be that the location of selected flow is not clearing up on click, check for endpoint calls - I would to this before debugging with AI)
 - Root cause:
 - Fix:
 - How I verified it:
