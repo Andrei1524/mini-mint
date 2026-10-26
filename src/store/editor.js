@@ -35,7 +35,7 @@ export const useEditorStore = defineStore("editor", {
         const flow = await api.getFlow(flowId);
         if (this.activeFlowId !== flowId) return; // this is the fix from the AI, its good but I belive I still have 2 ongoing calls even tho my data saved is correct now - leave for later
         this.flow = flow;
-        this.original = flow;
+        this.original = structuredClone(flow);
         api.subscribe(flowId, (event) => this.handleRealtimeEvent(event));
       } catch (error) {
         if (this.activeFlowId !== flowId) return;
