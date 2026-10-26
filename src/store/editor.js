@@ -12,25 +12,27 @@ export const useEditorStore = defineStore("editor", {
     original: null,
     loading: false,
     saving: false,
-    selectedStepId: null
-  }),
-
+    selectedStepId: null,
+  }), 
+ 
   getters: {
     tree: (state) => (state.flow ? buildTree(state.flow) : []),
-    selectedStep: (state) => (state.flow && state.selectedStepId ? getStep(state.flow, state.selectedStepId) : null),
-    isDirty: (state) => !!state.flow && JSON.stringify(state.flow) !== JSON.stringify(state.original)
+    selectedStep: (state) =>
+      state.flow && state.selectedStepId ? getStep(state.flow, state.selectedStepId) : null,
+    isDirty: (state) =>
+      !!state.flow && JSON.stringify(state.flow) !== JSON.stringify(state.original),
   },
-   
+
   // TODO: fix the issue of the formatter ox not working
-  actions: { 
+  actions: {
     async openFlow(flowId) {
       if (flowId === this.activeFlowId) return;
       if (this.isDirty && !window.confirm("You have unsaved changes. Discard them?")) return;
- 
+
       this.activeFlowId = flowId;
       this.selectedStepId = null;
       this.loading = true;
-      try { 
+      try {
         const flow = await api.getFlow(flowId);
         if (this.activeFlowId !== flowId) return; // this is the fix from the AI, its good but I belive I still have 2 ongoing calls even tho my data saved is correct now - leave for later
         this.flow = flow;
@@ -41,7 +43,7 @@ export const useEditorStore = defineStore("editor", {
         useUiStore().notify({ intent: "danger", text: `Could not load flow: ${error.message}` });
       } finally {
         if (this.activeFlowId === flowId) this.loading = false;
-      } 
+      }
     },
 
     async save() {
@@ -80,19 +82,22 @@ export const useEditorStore = defineStore("editor", {
         id: crypto.randomUUID(),
         type,
         displayName: definition.label,
-        properties: definition.defaults()
+        properties: definition.defaults(),
       };
       insertStep(this.flow, step, position);
       this.selectedStepId = step.id;
     },
-
+ 
     deleteStep(stepId) {
       if (!canRemoveStep(this.flow, stepId)) {
-        useUiStore().notify({ intent: "warning", text: "Remove the steps inside this condition first." });
+        useUiStore().notify({
+          intent: "warning",
+          text: "Remove the steps inside this condition first.",
+        });
         return;
       }
       removeStep(this.flow, stepId);
       if (this.selectedStepId === stepId) this.selectedStepId = null;
-    }
-  }
+    },
+  },
 });
