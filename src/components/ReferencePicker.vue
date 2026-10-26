@@ -1,15 +1,21 @@
 <template>
   <div class="reference-picker">
-    <!-- <catnip-list role="menu" size="m">
-        <catnip-list-item v-for="type in ADDABLE_STEP_TYPES" :key="type" @click="add(type)">
-          <catnip-icon slot="left" .name="getStepIcon(type)" size="20"></catnip-icon>
-          {{ getStepTypeLabel(type) }}
-        </catnip-list-item>
-      </catnip-list> -->
+    <catnip-list role="menu" size="m" v-for="group in references" :key="group.stepId">
+      <catnip-list-item
+        v-for="output in group.outputs"
+        :key="output.key"
+        @click="emit('select', output.ref)"
+      >
+        <catnip-icon slot="left" .name="group.icon" size="20"></catnip-icon>
+        {{ group.label }} → {{ output.label }}
+      </catnip-list-item>
+    </catnip-list>
   </div>
 </template>
 
 <script setup>
+import { computed } from "vue";
+import { STEP_TYPES } from "../logic/stepTypes";
 import { useEditorStore } from "../store/editor";
 
 defineProps({
@@ -21,6 +27,42 @@ defineProps({
 defineEmits(["select"]);
 
 const editor = useEditorStore();
+
+const references = computed(() => {
+  const flow = editor.flow;
+  const targetId = editor.selectedStepId;
+  if (!flow || !targetId) return [];
+
+  // collect every step upstream of the selected one
+  const upstream = new Set();
+  const queue = [targetId];
+  while (queue.length) {
+    const id = queue.shift();
+    for (const c of flow.connections) {
+      if (c.targetStepId === id && !upstream.has(c.sourceStepId)) {
+        upstream.add(c.sourceStepId);
+        queue.push(c.sourceStepId);
+      }
+    }
+  }
+  upstream.delete(targetId); // guards against loops pointing back at itself
+
+  return flow.steps
+    .filter((step) => upstream.has(step.id))
+    .map((step) => {
+      const type = STEP_TYPES[step.type];
+      return {
+        stepId: step.id,
+        label: step.name || type?.label || step.type,
+        icon: type?.icon,
+        outputs: (type?.outputs?.(step) ?? []).map((o) => ({
+          ...o,
+          ref: `{{${step.id}.${o.key}}}`,
+        })),
+      };
+    })
+    .filter((group) => group.outputs.length);
+});
 
 console.log(editor.flow.steps);
 </script>
