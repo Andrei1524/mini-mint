@@ -13,8 +13,8 @@ export const useEditorStore = defineStore("editor", {
     loading: false,
     saving: false,
     selectedStepId: null,
-  }), 
- 
+  }),
+
   getters: {
     tree: (state) => (state.flow ? buildTree(state.flow) : []),
     selectedStep: (state) =>
@@ -23,7 +23,6 @@ export const useEditorStore = defineStore("editor", {
       !!state.flow && JSON.stringify(state.flow) !== JSON.stringify(state.original),
   },
 
-  // TODO: fix the issue of the formatter ox not working
   actions: {
     async openFlow(flowId) {
       if (flowId === this.activeFlowId) return;
@@ -87,7 +86,7 @@ export const useEditorStore = defineStore("editor", {
       insertStep(this.flow, step, position);
       this.selectedStepId = step.id;
     },
- 
+
     deleteStep(stepId) {
       if (!canRemoveStep(this.flow, stepId)) {
         useUiStore().notify({
