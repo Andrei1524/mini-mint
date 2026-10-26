@@ -104,8 +104,13 @@ export const useEditorStore = defineStore("editor", {
         return;
       }
 
+      this.confirmDeleteStep(stepId);
+    },
+
+    confirmDeleteStep(stepId) {
       removeStep(this.flow, stepId);
       if (this.selectedStepId === stepId) this.selectedStepId = null;
+      useUiStore().stepToDeleteId = null;
     },
   },
 });
