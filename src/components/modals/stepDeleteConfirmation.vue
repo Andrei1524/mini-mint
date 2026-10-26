@@ -12,7 +12,7 @@
 <script setup>
 import { useUiStore } from "../../store/ui";
 
-const ui = useUiStore;
+const ui = useUiStore();
 </script>
 
 <style lang="scss" scoped></style>

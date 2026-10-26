@@ -11,11 +11,22 @@
         <catnip-badge v-if="editor.isDirty" intent="warning" size="s">Unsaved changes</catnip-badge>
       </template>
       <div class="spacer" />
-      <catnip-toggle .modelValue="collaboratorActive" @update:modelValue="collaboratorActive = eventValue($event)">
+      <catnip-toggle
+        .modelValue="collaboratorActive"
+        @update:modelValue="collaboratorActive = eventValue($event)"
+      >
         Simulate colleague
       </catnip-toggle>
-      <catnip-button appearance="ghost" size="s" left-icon="refresh" @click="resetDemoData">Reset demo data</catnip-button>
-      <catnip-button appearance="secondary" size="s" .disabled="!editor.isDirty" @click="editor.discard()">Discard</catnip-button>
+      <catnip-button appearance="ghost" size="s" left-icon="refresh" @click="resetDemoData"
+        >Reset demo data</catnip-button
+      >
+      <catnip-button
+        appearance="secondary"
+        size="s"
+        .disabled="!editor.isDirty"
+        @click="editor.discard()"
+        >Discard</catnip-button
+      >
       <catnip-button
         appearance="primary"
         size="s"
@@ -44,18 +55,20 @@
     </main>
 
     <ToastHost />
+    <Modals />
   </div>
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
 import { api } from "@/api";
-import { useEditorStore } from "@/store/editor.js";
-import { eventValue } from "@/logic/catnip.js";
-import FlowList from "@/components/FlowList.vue";
 import FlowCanvas from "@/components/FlowCanvas.vue";
+import FlowList from "@/components/FlowList.vue";
 import StepSidebar from "@/components/StepSidebar.vue";
 import ToastHost from "@/components/ToastHost.vue";
+import { eventValue } from "@/logic/catnip.js";
+import { useEditorStore } from "@/store/editor.js";
+import { ref, watch } from "vue";
+import Modals from "./components/modals/modals.vue";
 
 const editor = useEditorStore();
 const collaboratorActive = ref(false);
