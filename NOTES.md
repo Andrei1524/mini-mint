@@ -37,6 +37,9 @@
 
 ### A. Reference picker
 
+(plan of attack: I would read the feature, understand it, try to check if to use catnip-list component, read the outputs and try to come later with a logic implement.
+I saw IdVerification from the editor flow steps is the same as the STEP_TYPEs obj in stepTypes.js so when building the feature get the output from that list of obj by key
+)
 <!-- Which outputs you offer, and why. Edge cases you thought about. -->
 
 ### B. Safe delete
