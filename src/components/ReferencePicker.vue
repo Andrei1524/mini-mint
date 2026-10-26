@@ -15,6 +15,7 @@
 
 <script setup>
 import { computed } from "vue";
+import { makeReference } from "../logic/references";
 import { STEP_TYPES } from "../logic/stepTypes";
 import { useEditorStore } from "../store/editor";
 
@@ -24,7 +25,7 @@ defineProps({
 });
 
 /** Emit `select` with a reference string, e.g. makeReference(stepId, outputKey) from logic/references.js */
-defineEmits(["select"]);
+const emit = defineEmits(["select"]);
 
 const editor = useEditorStore();
 
@@ -57,14 +58,12 @@ const references = computed(() => {
         icon: type?.icon,
         outputs: (type?.outputs?.(step) ?? []).map((o) => ({
           ...o,
-          ref: `{{${step.id}.${o.key}}}`,
+          ref: makeReference(step.id, o.key),
         })),
       };
     })
     .filter((group) => group.outputs.length);
 });
-
-console.log(editor.flow.steps);
 </script>
 
 <style scoped lang="scss">
