@@ -140,12 +140,10 @@ export function removeStep(flow, stepId) {
 
   flow.steps = flow.steps.filter((s) => s.id !== stepId);
   flow.connections = flow.connections.filter((c) => c.sourceStepId !== stepId && c.targetStepId !== stepId);
-
+ 
   if (outgoing) {
-    console.log({outgoing})
     incoming.forEach((c) => {
-      console.log(c)
-      flow.connections.push({ ...outgoing, sourceStepId: c.sourceStepId });
+      flow.connections.push({ ...outgoing, sourceStepId: c.sourceStepId, outcome: c.outcome });
     });
   }
 }

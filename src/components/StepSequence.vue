@@ -1,5 +1,5 @@
 <template>
-  <!-- this is using recursion to the nodes -->
+  <!-- this is using recursion to the nodes till the end -->
   <div class="sequence">
     <AddStepButton :position="startPosition" />
     <template v-for="node in nodes" :key="node.step.id">
