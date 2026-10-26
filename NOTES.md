@@ -60,7 +60,11 @@ Im finding the references using the help of parseReferences by flattening the pr
 
 <!-- Anything that was unclear and how you decided. -->
 
+I had to read the getStepDependents func multiple times to properly understand it, sometimes claude didnt know catnip documentation, I had to look myself at component events and other stuff.
+
 ## If I had more time
+
+I would try to come with a better modal system, actually fix the openFlow action by cancelling unused calls and move the fetch to a services layer or a better structure to organize fetches.
 
 ## AI usage
 
@@ -69,3 +73,88 @@ Which tools you used and for what.
 A few examples of prompts or tasks you gave them.
 What you kept, what you changed, and what you threw away (and why).
 -->
+
+I only used claude web chat using only batches of code and relevant contexnt to generate exactly the code I need to go further.
+
+Examples of some claude chats:
+
+-- begin --
+
+me: I have this obj
+
+export const STEP_TYPES = {
+Form: {
+label: "Form",
+icon: "form-step",
+defaults: () => ({
+title: "Tell us about yourself",
+fields: [
+{ key: "email", label: "Email" },
+{ key: "phone", label: "Phone" }
+]
+}),
+outputs: (step) => (step.properties?.fields ?? []).map((f) => ({ key: f.key, label: f.label || f.key }))
+},
+IdVerification: {
+label: "ID verification",
+icon: "id-card",
+defaults: () => ({ provider: "BankID", country: "NO" }),
+outputs: () => [
+{ key: "fullName", label: "Full name" },
+{ key: "dateOfBirth", label: "Date of birth" },
+{ key: "nationalId", label: "National ID" },
+{ key: "country", label: "Country" }
+]
+},
+me: and I have this feature
+
+- The **Insert reference** link in the step sidebar already opens `src/components/ReferencePicker.vue`. It is currently a stub.
+- The picker lists the outputs the selected step can use, grouped by step, with readable names.
+- Only list outputs that **will actually be available when the selected step runs**.
+- Picking an output inserts the reference into the field.
+- _Optional:_ references are hard to read as UUIDs. Improve how they are shown to the user if you have time.
+  and I want to use this computed to store the possible outputs
+
+const references = computed(() => {
+
+})
+me: and this is my example comp, using catnip design system
+
+<catnip-list role="menu" size="m">
+        <catnip-list-item v-for="type in ADDABLE_STEP_TYPES" :key="type" @click="add(type)">
+          <catnip-icon slot="left" .name="getStepIcon(type)" size="20"></catnip-icon>
+          {{ getStepTypeLabel(type) }}
+        </catnip-list-item>
+      </catnip-list>
+
+From this chat I kept all the code
+
+some time later I asked this to quickly grasp the logic behind mini-mint: on the references code earlier how you actually know when to use certain outputs in some steps?
+And used the chat response to make a better idea on how things should work.
+-- end --
+
+-- begin --
+me: having this new feature
+
+### Feature B: Safe delete
+
+> _Right now, deleting a step that other steps depend on silently breaks the flow. The customer only finds out when it fails in production._
+
+- When a step's outputs are used by other steps, deleting it asks for confirmation first and shows which steps use it.
+- This must work for every kind of step property.
+  and this func below that needs to check for the outputs now
+
+/** True when the step can be removed without first emptying its branches. */
+export function canRemoveStep(flow, stepId) {
+const step = getStep(flow, stepId);
+if (!step) return false;
+return getBranchOutcomes(step).every((outcome) => !getTarget(flow, stepId, outcome));
+}
+me: this is the entire graph.js file (so claude have a context)
+
+then he generated me the **getStepDependents** function then I went ahead and used that to actually test and build my blocks of the modal
+kept this function as it is and added other building blocks
+-- end --
+
+I also asked claude multiple times to show me quick examples in text on how the data is flowing, how references are found in getStepDependents and to show me the flow
+of stuff to quickly grasp it in these 4 hours.
